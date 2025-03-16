@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const session = require('express-session');
 const mustacheExpress = require('mustache-express');
+const logMiddleware = require('./middleware/logMiddleware');
 
 // Include the mustache engine to help us render our pages
 app.engine("mustache", mustacheExpress());
@@ -11,11 +12,15 @@ app.set('views', __dirname + '/views');
 // We use the .urlencoded middleware to process form data in the request body,
 // which is something that occurs when we have a POST request.
 app.use(express.urlencoded({extended: false}));
+app.use(express.json());
 
 // Use the session middleware
 app.use(session({secret: 'keyboard cat'
                 ,resave: false
                 ,saveUninitialized:false}))
+
+//logging middleware
+app.use(logMiddleware);
 
 // Create a middleware to populate an initial template array
 app.use(function(req,res,next) {
