@@ -47,6 +47,45 @@ router.post("/attemptlogin", async function(req, res)
           res.redirect("/login");
       }
   });
+});
+
+
+
+//singup page
+router.get("/signup", async function(req, res) {
+  //if there was a fialed attmpet to sign up, display the error, or success, and clear it
+  req.TPL.signup_success = req.session.signup_success;
+  req.session.signup_success = "";
+
+  req.TPL.signup_error = req.session.signup_error;
+  req.session.signup_error = "";
+  res.render("signup", req.TPL);
+});
+
+
+
+//actually signing up a new user
+router.post("/attemptsignup", async function(req, res) {
+  const { username, password } = req.body;
+
+  //user and pass have to be at elast 1 char long
+  if (username.length < 1 || password.length < 1) {
+      req.session.signup_error = "Username/password cannot be blank!";
+      return res.redirect("/login/signup");
+  }
+
+  Users.createUser(username, password, (err) => {
+      if (err) {
+          console.error('Database error:', err);
+          req.session.signup_error = "An error occurred. Please try again.";
+          return res.redirect("/login/signup");
+      }
+
+      //successfully signed up a new user
+      req.session.signup_success = true;
+      res.redirect("/login/signup");
+  });
+});
 
 //commenting this bc I can never delete our beloved professors code !!
 
@@ -67,7 +106,7 @@ router.post("/attemptlogin", async function(req, res)
   //   res.redirect("/login");
   // }
 
-});
+
 
 // Logout a user
 // - Destroys the session key username that is used to determine if a user

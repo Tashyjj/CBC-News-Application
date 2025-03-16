@@ -12,6 +12,20 @@ class Users {
             callback(null, row);
         });
     }
+
+    //new user
+    static createUser(username, password, callback) {
+        const query = 'INSERT INTO Users (username, password, level) VALUES (?, ?, ?)';
+        db.run(query, [username, password, 'member'], function(err) {
+            if (err) {
+                return callback(err);
+            }
+            callback(null, this.lastID);
+        });
+    }
 }
+
+
+
 
 module.exports = Users;
