@@ -3,23 +3,44 @@ var router = express.Router();
 const ArticlesModel = require('../models/articles.js');
 
 // Display the members page
-router.get("/", async function(req, res)
-{
-  res.render("members", req.TPL);
+router.get("/", async function(req, res) {
+  //make sure theyre logged in
+  if (!req.session.username) {
+      return res.redirect("/home");
+  }
+  
+  try {
+    //getting all articles
+    const articles = await ArticlesModel.getAllArticles();
+    req.TPL.articles = articles;
+    res.render("members", req.TPL);
+  } catch (err) {
+    console.error("Error fetching articles:", err);
+    req.TPL.message = "An error occurred while fetching articles.";
+    res.render("members", req.TPL);
+  }
+
 });
 
 // Create an article if the form has been submitted
 router.post("/create", async function(req, res)
 {
-  // Create the article using the model method, pass req.body as a parameter
-  // since it contains the title and content data... the author is hardcoded
-  // to "bob" for now, this should be whichever user is logged-in
-  await ArticlesModel.createArticle(req.body,"bob");
+  //again make sure theyre logged in
+  if (!req.session.username) {
+    return res.redirect("/home");
+  }
 
-  // Insert a message that an article has successfully been created and
-  // display the articles page again
-  req.TPL.message = "Article successfully created!";
-  res.render("members", req.TPL);
+  try {
+    //using the logged in users name to create the article
+    await ArticlesModel.createArticle(req.body, req.session.username);
+
+    req.TPL.message = "Article successfully created!";
+    res.render("members", req.TPL);
+  } catch (err) {
+    console.error("Error writing article:", err);
+    req.TPL.message = "An error occurred while making the article.";
+    res.render("members", req.TPL);
+  }
 });
 
 module.exports = router;
