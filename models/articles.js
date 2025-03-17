@@ -1,31 +1,43 @@
 const sqlite3 = require("sqlite3").verbose();
-const sqlite = require("sqlite");
-
-let db;
-
-async function init() {
-  try {
-    db = await sqlite.open({
-      filename: 'database.db',
-      driver: sqlite3.Database
-    });
-  } catch(err) {
-      console.error(err);
-  }
-}
-
-init();
+const db = new sqlite3.Database('./database.db');
 
 // Return all of the articles
+function getAllArticles() {
+  return new Promise((resolve, reject) => {
+      const query = 'SELECT * FROM Articles';
+      db.all(query, [], (err, rows) => {
+          if (err) {
+              return reject(err);
+          }
+          resolve(rows);
+      });
+  });
+}
 
-async function getAllArticles() {
-  try {
-    const results = await db.all("SELECT * FROM Articles");
-    return results;
-  } catch (err) {
-    console.error("Error fetching articles:", err);
-    throw err;
-  }
+//delete article using ID
+function deleteArticle(articleId) {
+  return new Promise((resolve, reject) => {
+      const query = 'DELETE FROM Articles WHERE id = ?';
+      db.run(query, [articleId], function(err) {
+          if (err) {
+              return reject(err);
+          }
+          resolve();
+      });
+  });
+}
+
+//deleting article using author
+function deleteArticlesByAuthor(author) {
+  return new Promise((resolve, reject) => {
+      const query = 'DELETE FROM Articles WHERE author = ?';
+      db.run(query, [author], function(err) {
+          if (err) {
+              return reject(err);
+          }
+          resolve();
+      });
+  });
 }
 
 // async function getAllArticles()
@@ -48,10 +60,14 @@ async function createArticle(article,username) {
   }
 }
 
+
+
 // {
 //   await db.run("INSERT INTO Articles VALUES (?,?,?)",
 //          [article.title, username, article.content]);
 // }
 
 module.exports = {getAllArticles
+                  ,deleteArticle
+                  ,deleteArticlesByAuthor
                  ,createArticle};

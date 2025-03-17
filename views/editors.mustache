@@ -1,17 +1,53 @@
 {{>header}}
-
 {{>navigation}}
 
 <div class="row">
   <div class="leftcolumn">
     <div class="card">
-      <h2>Editors</h2>
-      <p>Only editors should be able to view this page!</p>
+      <h2>Editors Page</h2>
+
+      
+      <h3>Users</h3>
+      <table border="1">
+
+        <tr>
+          <th>Username</th>
+          <th>Password</th>
+          <th>Access Level</th>
+          <th>Delete</th>
+        </tr>
+        {{#users}}
+          <tr>
+
+            <td>{{username}}</td>
+            <td>{{password}}</td>
+            <td>{{level}}</td>
+            <td><a href="/editors/delete-user/{{username}}">D</a></td>
+
+          </tr>
+        {{/users}}
+      </table>
+
+      
+      <h3>Articles</h3>
+      <table border="1">
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Delete</th>
+        </tr>
+        {{#articles}}
+          <tr>
+            <td>{{title}}</td>
+            <td>{{author}}</td>
+            <td><a href="/editors/delete-article/{{id}}">D</a></td>
+          </tr>
+        {{/articles}}
+      </table>
     </div>
   </div>
 
   {{>sidebar}}
-
 </div>
 
 {{>footer}}

@@ -94,6 +94,8 @@ app.use("/members", require("./controllers/members"));
 app.use("/editors", require("./controllers/editors"));
 app.use("/login", require("./controllers/login"));
 
+app.use(express.static('public'));
+
 // - We route / to redirect to /home by default
 app.get("/", function(req, res) {
   res.redirect("/home");
